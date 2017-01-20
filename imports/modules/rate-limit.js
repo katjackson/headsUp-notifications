@@ -5,14 +5,14 @@ import { _ } from 'meteor/underscore';
 const fetchMethodNames = methods => _.pluck(methods, 'name');
 
 const assignLimits = ({ methods, limit, timeRange }) => {
-  const methodNames = fetchMethodNames(methods);
+	const methodNames = fetchMethodNames(methods);
 
-  if (Meteor.isServer) {
-    DDPRateLimiter.addRule({
-      name(name) { return _.contains(methodNames, name); },
-      connectionId() { return true; },
-    }, limit, timeRange);
-  }
+	if (Meteor.isServer) {
+		DDPRateLimiter.addRule({
+			name(name) { return _.contains(methodNames, name); },
+			connectionId() { return true; },
+		}, limit, timeRange);
+	}
 };
 
 export default function rateLimit(options) { return assignLimits(options); }
