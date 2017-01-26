@@ -26,16 +26,22 @@ Notifications.schema = new SimpleSchema({
 	subscribers: {
 		type: [String],
 		label: 'Who want to know',
-		defaultValue: [this.userId]
 	},
 	history: {
 		type: [Object],
 		label: 'Who spread it and when',
 	},
+	"history.$.action": { type: String },
+	"history.$.user": { type: String },
+	"history.$.timestamp": { type: Date },
 	private: {
 		type: Boolean,
 		label: 'Invite only?',
 		defaultValue: false
+	},
+	owner: {
+		type: String,
+		defaultValue: this.userId
 	}
 });
 

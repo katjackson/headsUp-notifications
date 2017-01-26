@@ -3,6 +3,10 @@ import { ValidatedMethod } from 'meteor/mdg:validated-method';
 import Notifications from './notifications';
 import rateLimit from '../../modules/rate-limit.js';
 
+if (Meteor.isServer) {
+	import sendNotificationEmail from '../../modules/server/send-notification-email.js';
+};
+
 export const insertNotification = new ValidatedMethod({
 	name: 'notifications.insert',
 	validate: new SimpleSchema({
@@ -10,14 +14,17 @@ export const insertNotification = new ValidatedMethod({
 		private: { type: Boolean }
 	}).validator(),
 	run(notification) {
-		notification.subscribers = [this.userId]
-		notification.history = [{
-			action: "Created",
-			timestamp: new Date(),
-			user: this.userId
-		}]
-		response = Notifications.insert(notification);
-		return response;
+		return Notifications.insert({
+			content: notification.content,
+			private: notification.private,
+			subscribers: [],
+			history: [{
+				action: "Created",
+				timestamp: new Date(),
+				user: this.userId
+			}],
+			owner: this.userId
+		});
 	},
 });
 
@@ -33,20 +40,12 @@ export const updateNotification = new ValidatedMethod({
 		if (notification.content === originalNotification.content && notification.private === originalNotification.private) {
 			return notification._id;
 		};
-		result = Notifications.update({ _id: notification._id }, {
+		return Notifications.update({ _id: notification._id }, {
 			$set: {
 				content: notification.content,
 				private: notification.private,
-			},
-			$push: {
-				history: {
-					action: "Edited",
-					timestamp: new Date(),
-					user: this.userId
-				}
 			}
 		});
-		return result;
 	},
 });
 
@@ -76,9 +75,10 @@ export const removeNotification = new ValidatedMethod({
 export const subscribeToNotification = new ValidatedMethod({
 	name: 'notifications.subscribe',
 	validate: new SimpleSchema({
-		userId: { type: String },
+		_id: { type: String },
+		userId: { type: String }
 	}).validator(),
-	run({_id, userId}) {
+	run({ _id, userId }) {
 		return Notifications.update(_id, { $addToSet: { subscribers: userId } });
 	}
 });
@@ -86,10 +86,31 @@ export const subscribeToNotification = new ValidatedMethod({
 export const unsubscribeFromNotification = new ValidatedMethod({
 	name: 'notification.unsubscribe',
 	validate: new SimpleSchema({
-		userId: { type: String },
+		_id: { type: String },
+		userId: { type: String }
 	}).validator(),
-	run({_id, userId}) {
-		return Notifications.update(_id, { $pull: { subscribers: userId } })
+	run({ _id, userId }) {
+		Notifications.update(_id, { $pull: { subscribers: userId } });
+	}
+});
+
+export const notifySubscribers = new ValidatedMethod({
+	name: 'notifications.send',
+	validate: new SimpleSchema({
+		notification: { type: Object },
+		'notification.subscribers': { type: [String] },
+		'notification.content': { type: String },
+		'notification._id': { type: String },
+		'notification.private': { type: Boolean },
+		'notification.history': { type: [Object] },
+		'notification.owner': { type: String },
+		notifierId: { type: String },
+		additionalText: { type: String, optional: true }
+	}).validator(),
+	run({ notification, notifierId, additionalText }) {
+		if (Meteor.isServer){
+			sendNotificationEmail(notification, notifierId, additionalText)
+		}
 	}
 });
 
@@ -100,7 +121,8 @@ rateLimit({
 		insertNotification,
 		updateNotification,
 		subscribeToNotification,
-		unsubscribeFromNotification
+		unsubscribeFromNotification,
+		notifySubscribers
 	],
 	limit: 5,
 	timeRange: 1000,
