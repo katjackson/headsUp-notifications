@@ -1,8 +1,9 @@
 import React from 'react';
 import { Link } from 'react-router';
+import { Meteor } from 'meteor/meteor';
 import { Row, Col, Button } from 'react-bootstrap';
 import NotificationsList from '../containers/NotificationsList.js';
-import { Meteor } from 'meteor/meteor';
+import PrivateNotificationsList from '../containers/PrivateNotificationsList.js'
 
 const Notifications = () => (
 	<div className="Notifications">
@@ -18,6 +19,9 @@ const Notifications = () => (
 					</Link>
 				</div>
 				<NotificationsList />
+			</Col>
+			<Col xs={ 12 }>
+				<PrivateNotificationsList />
 			</Col>
 		</Row>
 	</div>

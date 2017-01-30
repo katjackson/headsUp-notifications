@@ -1,13 +1,10 @@
 import React from 'react';
 // import { ButtonToolbar, ButtonGroup, Button } from 'react-bootstrap';
-import { browserHistory } from 'react-router';
-import { Bert } from 'meteor/themeteorchef:bert';
 import { Meteor } from 'meteor/meteor';
 import NotificationSubscriber from '../components/NotificationSubscriber.js';
 import NotificationSendButton from '../components/NotificationSendButton.js';
 import NotificationEditButtons from '../components/NotificationEditButtons.js';
 import SubscribersList from '../components/SubscribersList.js'
-import { removeNotification, subscribeToNotification, unsubscribeFromNotification, notifySubscribers } from '../../api/notifications/methods.js';
 
 const userOwnsNotification = (notification, userId) => {
 	return notification.owner === userId;

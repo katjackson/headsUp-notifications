@@ -1,6 +1,8 @@
 import React from 'react';
-import { ButtonToolbar, ButtonGroup, Button } from 'react-bootstrap';
 import { Meteor } from 'meteor/meteor';
+import { browserHistory } from 'react-router';
+import { Bert } from 'meteor/themeteorchef:bert';
+import { ButtonToolbar, ButtonGroup, Button } from 'react-bootstrap';
 import { removeNotification } from '../../api/notifications/methods.js';
 
 const handleEdit = (_id) => {

@@ -12,7 +12,7 @@ const getRecipients = (notification, notifierId) => {
 	)
 };
 
-export default function sendNotificationEmail(notification, notifierId, additionalText) {
+export default function sendNotificationEmail({ notification, notifierId, additionalText }) {
 	const notifier = Meteor.users.findOne({ _id: notifierId })
 	if (notifier === null || notifier === undefined) throw new Error("Cannot find notifying user")
 	const notifierName = notifier.profile.name.first + ' ' + notifier.profile.name.last

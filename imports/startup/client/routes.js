@@ -9,6 +9,7 @@ import Notifications from '../../ui/pages/Notifications.js'
 import NewNotification from '../../ui/pages/NewNotification.js';
 import EditNotification from '../../ui/containers/EditNotification.js';
 import ViewNotification from '../../ui/containers/ViewNotification.js';
+import UnsubscribeNotification from '../../ui/containers/UnsubscribeNotification.js';
 import Documents from '../../ui/pages/Documents.js';
 import NewDocument from '../../ui/pages/NewDocument.js';
 import EditDocument from '../../ui/containers/EditDocument.js';
@@ -38,6 +39,7 @@ Meteor.startup(() => {
 				<Route name="newNotification" path="/notifications/new" component={ NewNotification } onEnter={ authenticate } />
 				<Route name="editNotification" path="/notifications/:_id/edit" component={ EditNotification } onEnter={ authenticate } />
 				<Route name="viewNotification" path="/notifications/:_id" component={ ViewNotification } />
+				<Route name="unsubscribe" path="/notifications/:_id/unsubscribe" component={ UnsubscribeNotification } onEnter={ authenticate }/>
 				<Route name="documents" path="/documents" component={ Documents } onEnter={ authenticate } />
 				<Route name="newDocument" path="/documents/new" component={ NewDocument } onEnter={ authenticate } />
 				<Route name="editDocument" path="/documents/:_id/edit" component={ EditDocument } onEnter={ authenticate } />

@@ -37,15 +37,15 @@ export const updateNotification = new ValidatedMethod({
 	}).validator(),
 	run(notification) {
 		const originalNotification = Notifications.find({_id: notification._id});
-		if (notification.content === originalNotification.content && notification.private === originalNotification.private) {
-			return notification._id;
+		if (notification.content !== originalNotification.content || notification.private !== originalNotification.private) {
+			Notifications.update({ _id: notification._id }, {
+				$set: {
+					content: notification.content,
+					private: notification.private,
+				}
+			});
 		};
-		return Notifications.update({ _id: notification._id }, {
-			$set: {
-				content: notification.content,
-				private: notification.private,
-			}
-		});
+		return notification._id;
 	},
 });
 
@@ -84,7 +84,7 @@ export const subscribeToNotification = new ValidatedMethod({
 });
 
 export const unsubscribeFromNotification = new ValidatedMethod({
-	name: 'notification.unsubscribe',
+	name: 'notifications.unsubscribe',
 	validate: new SimpleSchema({
 		_id: { type: String },
 		userId: { type: String }
